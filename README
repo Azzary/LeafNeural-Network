@@ -21,4 +21,4 @@ The LeafNetwork model has been tested on the MNIST dataset provided by TensorFlo
 3. **Number of Epochs:** 20
 4. **Accuracy:** 0.9371
 
-![Confusion Matrix](./images/confusion_matrix.png)
+![Confusion Matrix](https://github.com/Azzary/LeafNeural-Network/blob/main/images/confusion_matrix.png)
