@@ -7,7 +7,7 @@ import numpy as np
 from .Layers.LeafLayer import LeafLayer
 import json
 from .Losses import Loss, MSE
-
+import importlib
 
 class LeafNetwork:
     
@@ -64,47 +64,37 @@ class LeafNetwork:
     def save(self, filename: str):
         model_data = {
             "input_size": self.input_size,
-            "layers": []
+            "layers": [layer.save() for layer in self.layers],
+            "loss": {
+                "type": self.loss.__class__.__name__,
+                "module": self.loss.__class__.__module__
+            }
         }
-        for i, layer in enumerate(self.layers):
-            if isinstance(layer, Dense):
-                layer_data = {
-                    "type": "Dense",
-                    "input_size": layer.weights.shape[1],
-                    "output_size": layer.weights.shape[0],
-                    "weights": layer.weights.tolist(),
-                    "bias": layer.bias.tolist()
-                }
-            elif isinstance(layer, ReLU):
-                layer_data = {"type": "ReLU"}
-            elif isinstance(layer, Softmax):
-                layer_data = {"type": "Softmax"}
-            elif isinstance(layer, Tanh):
-                layer_data = {"type": "Tanh"}
-            else:
-                raise ValueError(f"Unsupported layer type: {type(layer)}")
-            model_data["layers"].append(layer_data)
-        
         with open(filename, 'w') as f:
             json.dump(model_data, f)
-
+    
     @classmethod
     def load(cls, filename: str) -> 'LeafNetwork':
         with open(filename, 'r') as f:
             model_data = json.load(f)
+
+        input_size = model_data['input_size']
         
-        nn = cls(model_data["input_size"])
-        for layer_data in model_data["layers"]:
-            if layer_data["type"] == "Dense":
-                layer = Dense(layer_data["input_size"], layer_data["output_size"])
-                layer.weights = np.array(layer_data["weights"])
-                layer.bias = np.array(layer_data["bias"])
-                nn.add(layer)
-            elif layer_data["type"] == "ReLU":
-                nn.add(ReLU())
-            elif layer_data["type"] == "Softmax":
-                nn.add(Softmax())
-            elif layer_data["type"] == "Tanh":
-                nn.add(Tanh())
+        layers = []
+        for layer_data in model_data['layers']:
+            module_name = layer_data['module']
+            class_name = layer_data['type']
+            module = importlib.import_module(module_name)
+            layer_class: LeafLayer = getattr(module, class_name)
+            layer = layer_class.load(layer_data)
+            layers.append(layer)
         
-        return nn
+        loss_module_name = model_data['loss']['module']
+        loss_class_name = model_data['loss']['type']
+        loss_module = importlib.import_module(loss_module_name)
+        loss_class = getattr(loss_module, loss_class_name)
+        loss_instance = loss_class()
+
+        nn_instance = cls(input_size, loss_instance)
+        nn_instance.layers = layers
+        return nn_instance

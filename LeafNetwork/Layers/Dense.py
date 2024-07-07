@@ -33,8 +33,10 @@ class Dense(LeafLayer):
         """
         self.bias = np.zeros((output_size, 1)) 
         self.input: np.ndarray
-        
-        
+    
+    def dynamic_init(self):
+        self.input: np.ndarray
+    
     def forward(self, input: np.ndarray):
         self.input = input
         """
@@ -70,7 +72,8 @@ class Dense(LeafLayer):
         
         input_gradient = np.dot(self.weights.T, output_gradient)
         return input_gradient
-    
+
+
     
 if __name__ == "__main__":
     layer = Dense(3, 2)
