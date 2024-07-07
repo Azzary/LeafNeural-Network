@@ -2,10 +2,12 @@ from .LeafNetwork import LeafNetwork
 from . import Layers
 from . import Activations
 from . import Losses
+from . import Utils
 
 from .Losses import *
 from .Activations import *
 from .Layers import *
+from .Utils import *
 
 __all__ = ['LeafNetwork']
 __all__ += Layers.__all__
