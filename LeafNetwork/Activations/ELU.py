@@ -9,10 +9,10 @@ class ELU(Activation):
     
     def __init__(self, alpha=1.0):
         self.alpha = alpha
-        super().__init__(self.elu, self.elu_prime)
-    
-    def elu(self, x):
+        super().__init__()
+        
+    def activation(self, x: np.ndarray) -> np.ndarray:
         return np.where(x > 0, x, self.alpha * (np.exp(x) - 1))
     
-    def elu_prime(self, x):
+    def activation_derivative(self, x: np.ndarray) -> np.ndarray:
         return np.where(x > 0, 1, self.alpha * np.exp(x))

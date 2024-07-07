@@ -4,10 +4,12 @@ from .Activation import Activation
 class ReLU(Activation):
     
     def __init__(self):
-        super().__init__(self.relu, self.relu_prime)
+        super().__init__()
     
-    def relu(self, x: float) -> float:
+    def activation(self, x: np.ndarray) -> np.ndarray:
         return np.maximum(0, x)
     
-    def relu_prime(self, x: float) -> float:
+    def activation_derivative(self, x: np.ndarray) -> np.ndarray:
         return np.where(x > 0, 1, 0)
+
+    

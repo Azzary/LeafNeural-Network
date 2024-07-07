@@ -9,10 +9,10 @@ class LeakyReLU(Activation):
     
     def __init__(self, alpha=0.01):
         self.alpha = alpha
-        super().__init__(self.leaky_relu, self.leaky_relu_prime)
+        super().__init__()
     
-    def leaky_relu(self, x):
+    def activation(self, x: np.ndarray) -> np.ndarray:
         return np.where(x > 0, x, self.alpha * x)
     
-    def leaky_relu_prime(self, x):
+    def activation_derivative(self, x: np.ndarray) -> np.ndarray:
         return np.where(x > 0, 1, self.alpha)

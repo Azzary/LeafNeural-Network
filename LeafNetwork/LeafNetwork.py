@@ -1,15 +1,21 @@
 import numpy as np
 import json
 import importlib
-from typing import List, Type
+from typing import Callable, List, Type
 from .Layers.LeafLayer import LeafLayer
 from .Losses import Loss, MSE
+adjusment_func = Callable[[float, float, float, int, float], float]
+
+
+
+
+
 
 class LeafNetwork:
     def __init__(self, input_size: int, loss: Loss = MSE()):
         self.layers: List[LeafLayer] = []
         self.input_size = input_size
-        self.error_history: List[float] = []
+        self.error_history: List[np.float64] = []
         self.loss = loss
 
     def add(self, layer: LeafLayer) -> None:
@@ -26,24 +32,62 @@ class LeafNetwork:
 
     def backward(self, output_grad: np.ndarray, learning_rate: float) -> None:
         output_grad = self._ensure_2d(output_grad)
+        i = 0
         for layer in reversed(self.layers):
             output_grad = layer.backward(output_grad, learning_rate)
+            i += 1
+        
+    @staticmethod
+    def adaptive_lr(current_lr: float, current_error: float, previous_error: float, epoch: int, min_lr: float = 0.00001) -> float:
+        if epoch == 0 or previous_error == 0:
+            return current_lr
+        
+        error_ratio = current_error / previous_error
+        
+        if error_ratio > 1:
+            increase_percentage = (error_ratio - 1) * 100
+            decay_rate = min(0.5, increase_percentage / 100)
+            new_lr = max(current_lr * (1 - decay_rate), min_lr)
+        elif error_ratio < 0.99:
+            decrease_percentage = (1 - error_ratio) * 100
+            increase_rate = min(0.1, decrease_percentage / 200)
+            new_lr = min(current_lr * (1 + increase_rate), current_lr * 1.5)
+        else:
+            new_lr = current_lr
+        
+        return max(new_lr, min_lr)
+        
+    @staticmethod
+    def no_lr_adjustment(current_lr: float, current_error: float, 
+                            previous_error: float, epoch: int, 
+                            min_lr: float = 1e-6) -> float:
+        return current_lr 
 
-    def train(self, X: np.ndarray, Y: np.ndarray, epochs: int, learning_rate: float) -> List[float]:
+    def train(self, X: np.ndarray, Y: np.ndarray, epochs: int, learning_rate: float, 
+              lr_adjustment_func: adjusment_func = no_lr_adjustment) -> List[np.float64]:
         X = X.reshape(X.shape[0], X.shape[1], 1) if X.ndim == 2 else X
         Y = Y.reshape(Y.shape[0], Y.shape[1], 1) if Y.ndim == 2 else Y
 
+        current_lr = learning_rate
+        previous_error = None
+
         for epoch in range(epochs):
-            error = 0
+            error: np.float64 = np.float64(0)
             for x, y in zip(X, Y):
                 output = self.forward(x)
                 error += self.loss.compute_loss(y, output)
                 grad = self.loss.compute_gradient(y, output)
-                self.backward(grad, learning_rate)
+                self.backward(grad, current_lr)
 
             error /= len(X)
             self.error_history.append(error)
-            print(f"Epoch: {epoch} - Error: {error:.6f}")
+            
+            # Ajuster le taux d'apprentissage
+            current_lr = lr_adjustment_func(current_lr, error, previous_error, epoch, 1e-6)
+            
+            print(f"Epoch: {epoch} - Error: {error:.6f} - Learning Rate: {current_lr:.6f}")
+
+            previous_error = error
 
         return self.error_history
 
