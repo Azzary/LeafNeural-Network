@@ -9,11 +9,12 @@ class Sigmoid(Activation):
     """
     
     def __init__(self):
-        super().__init__(self.sigmoid, self.sigmoid_prime)
+        super().__init__()
     
-    def sigmoid(self, x):
+    def activation(self, x: np.ndarray) -> np.ndarray:
         return 1 / (1 + np.exp(-x))
     
-    def sigmoid_prime(self, x):
-        s = self.sigmoid(x)
+    def activation_derivative(self, x: np.ndarray) -> np.ndarray:
+        s = self.activation(x)
         return s * (1 - s)
+    

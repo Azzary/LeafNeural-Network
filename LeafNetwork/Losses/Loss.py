@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 class Loss(ABC):
-
+    
+    @abstractmethod
     def compute_loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """
         Compute the loss between the true labels and the predicted labels.

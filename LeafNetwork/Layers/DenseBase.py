@@ -1,9 +1,9 @@
 import numpy as np
 from .LeafLayer import LeafLayer
 
-class Dense(LeafLayer):
+class DenseBase(LeafLayer):
     
-    def __init__(self, input_size: float, output_size: float):
+    def __init__(self, input_size: int, output_size: int):
         super().__init__()
         """
         weights is a matrix of size input_size x output_size
@@ -35,9 +35,9 @@ class Dense(LeafLayer):
         self.input: np.ndarray
     
     def dynamic_init(self):
-        self.input: np.ndarray
+        self.input: np.ndarray = np.array([])
     
-    def forward(self, input: np.ndarray):
+    def forward(self, input: np.ndarray) -> np.ndarray:
         self.input = input
         """
         output = W * X + B
@@ -67,8 +67,6 @@ class Dense(LeafLayer):
         # Propagation du gradient vers la couche précédente.
         # On utilise le gradient de la perte par rapport à la sortie de cette couche (output_grad) et on le multiplie par les poids transposés de cette couche.
         # Cela permet de calculer le gradient de la perte par rapport aux activations de la couche précédente, essentiel pour la rétropropagation continue à travers le réseau.
-  
-        
         
         input_gradient = np.dot(self.weights.T, output_gradient)
         return input_gradient
@@ -76,7 +74,7 @@ class Dense(LeafLayer):
 
     
 if __name__ == "__main__":
-    layer = Dense(3, 2)
+    layer = DenseBase(3, 2)
     input_data = np.random.randn(1, 3)
     output_grad = np.random.randn(1, 2)
     layer.forward(input_data)

@@ -4,15 +4,14 @@ import numpy as np
 class LeafLayer(ABC):
     
     def __init__(self):
-        self.input = None
-        self.output = None
+        self.input: np.ndarray = np.array([])
 
     @abstractmethod
-    def forward(self, input):
+    def forward(self, input: np.ndarray) -> np.ndarray:
         pass
     
     @abstractmethod
-    def backward(self, output_grad, learning_rate):
+    def backward(self, output_gradient: np.ndarray, learning_rate: float) -> np.ndarray:
         pass
 
     def dynamic_init(self):
