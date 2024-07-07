@@ -1,4 +1,4 @@
-from .LeafLayer import LeafLayer
+from ..Layers.LeafLayer import LeafLayer
 import numpy as np
 
 class Activation(LeafLayer):

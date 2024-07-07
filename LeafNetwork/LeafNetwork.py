@@ -1,24 +1,26 @@
 
-from .Dense import Dense
-from .ReLU import ReLU
-from .Softmax import Softmax
-from .Tanh import Tanh
-from .LossUtils import categorical_cross_entropy, categorical_cross_entropy_prime, mse, mse_prime
+from .Layers.Dense import Dense
+from .Activations.ReLU import ReLU
+from .Activations.Softmax import Softmax
+from .Activations.Tanh import Tanh
 import numpy as np
-from .LeafLayer import LeafLayer
+from .Layers.LeafLayer import LeafLayer
 import json
+from .Losses import Loss, MSE
+
+
 class LeafNetwork:
     
-    def __init__(self, input_size: int):
+    def __init__(self, input_size: int, loss: Loss = MSE()):
         self.layers = []
         self.input_size = input_size
         self.error_history: list = []
+        self.loss = loss
         
     def add(self, layer: LeafLayer):
         self.layers.append(layer)
 
     def forward(self, input: np.ndarray) -> np.ndarray:
-        # Assurez-vous que l'entrée a la forme attendue, ajoutez des dimensions si nécessaire.
         if input.ndim == 1:
             input = input.reshape(-1, 1)
         for layer in self.layers:
@@ -26,13 +28,12 @@ class LeafNetwork:
         return input
 
     def backward(self, output_grad: np.ndarray, learning_rate: float):
-        # Assurez-vous que le gradient a la forme correcte
         if output_grad.ndim == 1:
             output_grad = output_grad.reshape(-1, 1)
         for layer in reversed(self.layers):
             output_grad = layer.backward(output_grad, learning_rate)
 
-    def train(self, X: np.ndarray, Y: np.ndarray, epochs: int, learning_rate: float):
+    def train(self, X: np.ndarray, Y: np.ndarray, epochs: int, learning_rate: float) -> list:
         if X.ndim == 2:
             X = X.reshape(X.shape[0], X.shape[1], 1)
         if Y.ndim == 2:
@@ -44,8 +45,8 @@ class LeafNetwork:
             error = 0
             for x, y in zip(X, Y):
                 output = self.forward(x)
-                error += mse(y, output)
-                grad = mse_prime(y, output)
+                error += self.loss.compute_loss(y, output)
+                grad = self.loss.compute_gradient(y, output)
                 self.backward(grad, learning_rate)
 
             error /= len(X)
@@ -56,12 +57,11 @@ class LeafNetwork:
         return error_history
 
     def predict(self, X: np.ndarray) -> np.ndarray:
-        # Ajout d'une dimension aux données si nécessaire
         if X.ndim == 2:
             X = X.reshape(X.shape[0], X.shape[1], 1)
         return np.array([self.forward(x).flatten() for x in X])
 
-    def save(self, filename):
+    def save(self, filename: str):
         model_data = {
             "input_size": self.input_size,
             "layers": []
@@ -89,7 +89,7 @@ class LeafNetwork:
             json.dump(model_data, f)
 
     @classmethod
-    def load(cls, filename):
+    def load(cls, filename: str) -> 'LeafNetwork':
         with open(filename, 'r') as f:
             model_data = json.load(f)
         
@@ -108,7 +108,3 @@ class LeafNetwork:
                 nn.add(Tanh())
         
         return nn
-    
-    
-def to_one_hot(y, num_classes=10):
-    return np.eye(num_classes)[y]

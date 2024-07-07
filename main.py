@@ -1,8 +1,7 @@
-import numpy as cp  # Importez numpy comme cp, pas np
-from cpu.LeafNetwork import LeafNetwork  # Assurez-vous d'utiliser la version GPU de vos classes
-from cpu.Dense import Dense
-from cpu.ReLU import ReLU
-
+import numpy as cp
+from LeafNetwork import *
+from LeafNetwork.Layers import *
+from LeafNetwork.Activations import *
 # Données d'entrée
 input_data = [1, 2]
 train_data = [[1, 0]]
