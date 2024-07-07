@@ -5,7 +5,7 @@ LeafNetwork is a custom neural network library built from scratch in Python, des
 ## Features
 
 - Dense (fully connected) layers with stability improvements
-- Activation functions: ReLU, Tanh, Softmax, [Others](LeafNetwork/activations/)
+- Activation functions: ReLU, Tanh, Softmax, [Others](LeafNetwork/Activations/)
 - Loss functions: Mean Squared Error (MSE), Categorical Cross Entropy
 - Customizable neural network architecture
 - Dynamic learning rate adjustment
