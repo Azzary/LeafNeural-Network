@@ -1,14 +1,12 @@
 
-from Dense import Dense
-from ReLU import ReLU
-from Softmax import Softmax
-from Tanh import Tanh
-from LossUtils import categorical_cross_entropy, categorical_cross_entropy_prime, mse, mse_prime
+from .Dense import Dense
+from .ReLU import ReLU
+from .Softmax import Softmax
+from .Tanh import Tanh
+from .LossUtils import categorical_cross_entropy, categorical_cross_entropy_prime, mse, mse_prime
 import numpy as np
-from LeafLayer import LeafLayer
+from .LeafLayer import LeafLayer
 import json
-
-import tensorflow as tf
 class LeafNetwork:
     
     def __init__(self, input_size: int):
@@ -114,32 +112,3 @@ class LeafNetwork:
     
 def to_one_hot(y, num_classes=10):
     return np.eye(num_classes)[y]
-
-if __name__ == "__main__":
-    # Charger les données MNIST
-    mnist = tf.keras.datasets.mnist
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
-
-    # Prétraitement des données
-    X_train = X_train.reshape(-1, 784) / 255.0
-    X_test = X_test.reshape(-1, 784) / 255.0
-    y_train_one_hot = to_one_hot(y_train)
-    
-    # Initialiser le réseau
-    nn = LeafNetwork(784)
-    nn.add(Dense(784, 128))
-    nn.add(ReLU())
-    nn.add(Dense(128, 64))
-    nn.add(ReLU())
-    nn.add(Dense(64, 10))
-    # Entraîner le réseau
-    # Vous devrez convertir y_train en une forme appropriée pour la classification, par exemple en utilisant one-hot encoding
-    nn.train(X_train[:10000], y_train_one_hot[:10000], epochs=2, learning_rate=0.0006)
-    nn.save("mnist_model.json")
-    # Tester le réseau
-    predictions = nn.predict(X_test)
-    predicted_labels = np.argmax(predictions, axis=1)
-    print("")
-    accuracy = np.mean(predicted_labels == y_test)
-    print(f"Test Accuracy: {accuracy}")
-

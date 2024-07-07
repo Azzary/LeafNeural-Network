@@ -1,5 +1,5 @@
 import numpy as np
-from LeafLayer import LeafLayer
+from .LeafLayer import LeafLayer
 
 class Dense(LeafLayer):
     

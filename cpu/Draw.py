@@ -3,7 +3,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
 
-from LeafNetwork import LeafNetwork
+from .LeafNetwork import LeafNetwork
 
 # Charger le modèle
 nn = LeafNetwork(784)
