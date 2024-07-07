@@ -52,11 +52,9 @@ To add a custom activation function, create a class that inherits from `Activati
 
 ```python
 class CustomActivation(Activation):
-    @abstractmethod
     def activation(self, input: np.ndarray) -> np.ndarray:
         pass
 
-    @abstractmethod
     def activation_derivative(self, input: np.ndarray) -> np.ndarray:
         pass
 ```
@@ -80,11 +78,9 @@ Once again to have cost functions, create a class that inherits from `Loss` and 
 
 ```python
 class CustomLoss(Loss):
-    @abstractmethod
     def compute_loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         pass
 
-    @abstractmethod
     def compute_gradient(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         pass
 ```
