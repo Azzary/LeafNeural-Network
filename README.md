@@ -101,11 +101,11 @@ input_size = 10
 
 leaf_network = LeafNetwork(input_size)
 
-leaf_network.add_layer(CustomLayer(10, 5))
-leaf_network.add_activation(CustomActivation())
-leaf_network.add_layer(DenseStable(5, 5))
-leaf_network.add_activation(ReLU())
-leaf_network.add_layer(DenseStable(5, 1))
+leaf_network.add(CustomLayer(input_size, 5))
+leaf_network.add(CustomActivation())
+leaf_network.add(DenseStable(5, 5))
+leaf_network.add(ReLU())
+leaf_network.add(DenseStable(5, 1))
 
 history = leaf_network.train(X_train[:100], y_train_one_hot[:100], epochs=10, learning_rate=0.001)
 # or 
