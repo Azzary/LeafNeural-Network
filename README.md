@@ -2,6 +2,8 @@
 
 LeafNetwork is a custom neural network library built from scratch in Python, designed for educational purposes. It provides a simple framework to create, train, and evaluate neural networks using basic layers and activation functions.
 
+### Explication deep learning : https://leafnebula.fr/nn-fundamentals
+
 ## Features
 
 - Dense (fully connected) layers with stability improvements
